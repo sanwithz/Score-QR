@@ -81,11 +81,15 @@
     </div>
 
     <div class="bg-purple-400 text-white p-4">
-      <div class="grid grid-cols-6 text-lg font-bold mb-2">
-        <span class="col-span-2 text-center small-font ">แต้มการเข้าร่วมกิจกรรม</span>
-        <span class="col-span-2 text-center small-font">แต้มที่ใช้แล้ว</span>
-        <span class="col-span-2 text-center small-font">แต้มคงเหลือ</span>
-      </div>
+<!-- เพิ่มส่วนหัวแสดงตารางให้ชัดเจน -->
+<div class="grid grid-cols-6 text-lg font-bold mb-2 bg-purple-700 text-white p-2 rounded">
+  <span class="col-span-1 text-center small-font">กิจกรรม</span>
+  <span class="col-span-1 text-center small-font">ใช้แล้ว</span>
+  <span class="col-span-1 text-center small-font">คงเหลือ</span>
+  <span class="col-span-2 text-center small-font">ชื่อ</span>
+  <span class="col-span-1 text-center small-font">QR</span>
+</div>
+
       <div id="data-container" class="space-y-2">
         <!-- Data will be appended here -->
       </div>
