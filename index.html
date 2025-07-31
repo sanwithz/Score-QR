@@ -110,6 +110,7 @@
       document.getElementById('user-name').textContent = profile.displayName;
       document.getElementById('user-image').src = profile.pictureUrl;
       fetchData(profile.userId);
+      console.log(profile.userId);
     }
 
     // Fetch data from JSON URL and filter based on user ID
