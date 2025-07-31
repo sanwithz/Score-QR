@@ -171,39 +171,14 @@ const rewardDiv = `<div class="w-8 h-8 ${colorClass} rounded"></div>`;
       
     }
 
-    //// Display user information
-    //function displayUserInfo(data) {
-    //  if (data.length > 0) {
-    //    const user = data[0];
-    //    document.getElementById('user-fullname').textContent = `${user.NAME}`;
-    //    document.getElementById('user-classroom').textContent = `รหัส : ${user.ID}`;
-    //  }
-    //}
-    
+    // Display user information
     function displayUserInfo(data) {
-  if (data.length > 0) {
-    const user = data[0];
-    document.getElementById('user-fullname').textContent = `${user.NAME}`;
-    document.getElementById('user-classroom').textContent = `รหัส : ${user.ID}`;
-
-    // เพิ่ม QR ให้อยู่ข้างล่างชื่อ
-    if (item.QR) {
-      let existing = document.getElementById('user-qr');
-      if (!existing) {
-        const qrImg = document.createElement('img');
-        qrImg.id = 'user-qr';
-        qrImg.src = user.QR;
-        qrImg.alt = 'QR Code';
-        qrImg.style.width = '120px';
-        qrImg.className = 'mx-auto mt-2 rounded border';
-        document.getElementById('user-classroom').after(qrImg);
-      } else {
-        existing.src = user.QR;
+      if (data.length > 0) {
+        const user = data[0];
+        document.getElementById('user-fullname').textContent = `${user.NAME}`;
+        document.getElementById('user-classroom').textContent = `รหัส : ${user.ID}`;
       }
     }
-  }
-}
-
 
     // Countdown timer
     function countdownTimer(targetDate, countdownId) {
