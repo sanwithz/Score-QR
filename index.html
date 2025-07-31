@@ -82,13 +82,13 @@
 
     <div class="bg-purple-400 text-white p-4">
 <!-- เพิ่มส่วนหัวแสดงตารางให้ชัดเจน -->
-<div class="grid grid-cols-6 text-lg font-bold mb-2 bg-purple-700 text-white p-2 rounded">
+<div class="grid grid-cols-5 text-lg font-bold mb-2 bg-purple-700 text-white p-2 rounded">
   <span class="col-span-1 text-center small-font">กิจกรรม</span>
   <span class="col-span-1 text-center small-font">ใช้แล้ว</span>
   <span class="col-span-1 text-center small-font">คงเหลือ</span>
   <span class="col-span-2 text-center small-font">ชื่อ</span>
-  <span class="col-span-1 text-center small-font">QR</span>
 </div>
+
 
       <div id="data-container" class="space-y-2">
         <!-- Data will be appended here -->
@@ -132,7 +132,7 @@ function displayData(data) {
   const container = document.getElementById('data-container');
   container.innerHTML = '';
 
-  // รวมข้อมูลตาม UID (ถ้า UID ว่างให้ใช้ key พิเศษ)
+  // รวมข้อมูลตาม UID
   const grouped = {};
   data.forEach(item => {
     const uid = item.UID && item.UID.trim() ? item.UID.trim() : '__no_uid__';
@@ -147,7 +147,6 @@ function displayData(data) {
         QR: item.QR && item.QR.trim() ? item.QR.trim() : '',
       };
     }
-    // สะสมแต้ม (แปลงเป็นตัวเลขปลอดภัย)
     const act = parseFloat(item["แต้มการเข้าร่วมกิจกรรม"]) || 0;
     const used = parseFloat(item["แต้มที่ใช้แล้ว"]) || 0;
     const rem = parseFloat(item["แต้มคงเหลือ"]) || 0;
@@ -156,17 +155,20 @@ function displayData(data) {
     grouped[uid].totalUsed += used;
     grouped[uid].totalRemaining += rem;
 
-    // ถ้าไม่มี QR เดิม แล้วเจอแถวใหม่มี QR ให้เติม
     if (!grouped[uid].QR && item.QR && item.QR.trim()) {
       grouped[uid].QR = item.QR.trim();
     }
   });
 
-  // สร้างแถวจาก grouped
+  // แสดง QR เดียว (สมมติผู้ใช้ล็อกอินมีแค่ UID เดียว)
+  const firstUser = Object.values(grouped)[0];
+  showSingleQr(firstUser);
+
+  // สร้างแถวตาราง (ไม่มี QR)
   const fragment = document.createDocumentFragment();
   Object.values(grouped).forEach(user => {
     const row = document.createElement('div');
-    row.className = 'grid grid-cols-6 items-center bg-purple-700 text-white p-2 rounded mb-1 gap-1';
+    row.className = 'grid grid-cols-5 items-center bg-purple-700 text-white p-2 rounded mb-1 gap-1';
 
     const activityPts = document.createElement('span');
     activityPts.className = 'col-span-1 text-center';
@@ -184,41 +186,58 @@ function displayData(data) {
     nameSpan.className = 'col-span-2 text-center';
     nameSpan.textContent = user.NAME || '-';
 
-    const qrSpan = document.createElement('span');
-    qrSpan.className = 'col-span-1 text-center';
-
-    // เตรียม QR: ถ้าไม่มีจาก API แต่มี ID สร้างอัตโนมัติ
-    let qrUrl = user.QR;
-    if (!qrUrl && user.ID && user.ID.trim()) {
-      const encoded = encodeURIComponent(user.ID.trim());
-      qrUrl = `https://quickchart.io/qr?text=${encoded}&code=MobileQRCode&dpi=96&dataseparator=`;
-    }
-
-    if (qrUrl) {
-      const img = document.createElement('img');
-      img.src = qrUrl;
-      img.alt = 'QR Code';
-      img.style.width = '50px';
-      img.style.cursor = 'pointer';
-      img.title = 'แตะเพื่อขยาย';
-      img.addEventListener('click', () => {
-        Swal.fire({
-          title: `QR Code ของ ${user.NAME || ''}`,
-          imageUrl: qrUrl,
-          imageWidth: 250,
-          imageAlt: 'QR Code',
-        });
-      });
-      qrSpan.appendChild(img);
-    } else {
-      qrSpan.textContent = '-';
-    }
-
-    row.append(activityPts, usedPts, remainingPts, nameSpan, qrSpan);
+    row.append(activityPts, usedPts, remainingPts, nameSpan);
     fragment.appendChild(row);
   });
 
   container.appendChild(fragment);
+}
+
+function showSingleQr(user) {
+  // ลบของเก่าถ้ามี
+  const existing = document.getElementById('single-qr-box');
+  if (existing) existing.remove();
+
+  // สร้าง URL ถ้าไม่มีจาก API แต่มี ID
+  let qrUrl = user.QR;
+  if (!qrUrl && user.ID && user.ID.trim()) {
+    const encoded = encodeURIComponent(user.ID.trim());
+    qrUrl = `https://quickchart.io/qr?text=${encoded}&code=MobileQRCode&dpi=150&dataseparator=`;
+  }
+  if (!qrUrl) return; // ไม่มีให้โชว์
+
+  // แสดงกล่อง QR เดียว
+  const container = document.querySelector('.bg-beige-300');
+  const box = document.createElement('div');
+  box.id = 'single-qr-box';
+  box.className = 'mt-4 p-4 bg-white rounded shadow inline-block text-center';
+
+  const title = document.createElement('div');
+  title.className = 'font-bold mb-2';
+  title.textContent = 'QR Code ประจำตัว';
+
+  const img = document.createElement('img');
+  img.src = qrUrl;
+  img.alt = 'QR Code';
+  img.style.width = '180px';
+  img.className = 'mx-auto border rounded';
+  img.title = user.NAME || '';
+  img.style.cursor = 'pointer';
+  img.addEventListener('click', () => {
+    Swal.fire({
+      title: `QR Code ของ ${user.NAME || ''}`,
+      imageUrl: qrUrl,
+      imageWidth: 300,
+      imageAlt: 'QR Code',
+    });
+  });
+
+  const caption = document.createElement('div');
+  caption.className = 'text-sm mt-1';
+  caption.textContent = user.ID ? `รหัส: ${user.ID}` : '';
+
+  box.append(title, img, caption);
+  container.prepend(box);
 }
 
 
