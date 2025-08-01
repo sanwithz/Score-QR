@@ -151,7 +151,7 @@ function displayData(data) {
     const used = parseFloat(item["แต้มที่ใช้แล้ว"]) || 0;
     const rem = parseFloat(item["แต้มคงเหลือ"]) || 0;
 
-    grouped[uid].totalActivity += act;
+    grouped[uid].totalActivity = act;
     grouped[uid].totalUsed += used;
     grouped[uid].totalRemaining += rem;
 
