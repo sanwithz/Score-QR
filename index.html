@@ -147,7 +147,7 @@ function displayData(data) {
         QR: item.QR && item.QR.trim() ? item.QR.trim() : '',
       };
     }
-    const act = (item["แต้มการเข้าร่วมกิจกรรม"]) || 0;
+    const act = item["แต้มการเข้าร่วมกิจกรรม"] || 0;
     const used = parseFloat(item["แต้มที่ใช้แล้ว"]) || 0;
     const rem = parseFloat(item["แต้มคงเหลือ"]) || 0;
 
